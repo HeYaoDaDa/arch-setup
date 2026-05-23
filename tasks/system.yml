@@ -63,6 +63,14 @@
   tags: [services, system]
 
 # --- 笔记本合盖行为 ---
+- name: Ensure logind override directory exists
+  file:
+    path: /etc/systemd/logind.conf.d
+    state: directory
+    mode: "0755"
+  when: lid_close_action is defined and lid_close_action == 'ignore'
+  tags: [lid, system]
+
 - name: Configure lid switch behavior (ignore)
   copy:
     src: "{{ playbook_dir }}/../files/systemd/logind.conf.d/lid.conf"
