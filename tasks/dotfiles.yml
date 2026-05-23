@@ -131,9 +131,9 @@
   tags: [systemd, dotfiles]
 
 - name: Enable linger (run user services without login)
-  command: loginctl enable-linger {{ user_name }}
-  become: no
-  changed_when: false
+  file:
+    path: /var/lib/systemd/linger/{{ user_name }}
+    state: touch
   tags: [systemd, dotfiles]
 
 - name: Fix home directory ownership (fallback)
