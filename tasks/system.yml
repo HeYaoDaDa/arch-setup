@@ -49,7 +49,6 @@
   systemd:
     name: "{{ item }}"
     enabled: yes
-    state: started
   loop: "{{ services_enabled }}"
   tags: [services, system]
 
@@ -57,7 +56,6 @@
   systemd:
     name: "{{ item }}"
     enabled: yes
-    state: started
   loop: "{{ services_extra | default([]) }}"
   when: services_extra | default([]) | length > 0
   tags: [services, system]
