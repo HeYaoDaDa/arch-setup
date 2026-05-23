@@ -1,0 +1,31 @@
+---
+# ─── 台式机独有配置 ───
+
+hostname: desktop-arch-i712700
+chassis: desktop
+
+# CPU
+cpu:
+  vendor: Intel
+  model: "12th Gen Intel(R) Core(TM) i7-12700"
+  microcode: intel-ucode
+
+# 显卡
+gpu:
+  vendor: Intel
+  model: "UHD 770 + Arc A380"
+  driver: intel-media-driver
+
+# 台式机专用包（Intel 驱动）
+packages_extra:
+  - vulkan-intel
+  - intel-media-driver
+
+# 网络（静态 IP）
+static_ip: 192.168.10.25
+
+# 显示器
+monitors:
+  - name: DP-3
+    scale: 2
+    primary: true

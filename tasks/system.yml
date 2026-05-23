@@ -1,0 +1,149 @@
+---
+# --- Hostname ---
+- name: Set hostname
+  hostname:
+    name: "{{ hostname }}"
+  tags: [hostname, system]
+
+- name: Update /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1 {{ hostname }}.local {{ hostname }}"
+  tags: [hostname, system]
+
+# --- Timezone ---
+- name: Set timezone
+  timezone:
+    name: "{{ timezone }}"
+  tags: [timezone, system]
+
+# --- Locale ---
+- name: Generate locale
+  locale_gen:
+    name: "{{ locale }}"
+    state: present
+  tags: [locale, system]
+
+- name: Set system locale
+  command: localectl set-locale LANG={{ locale }}
+  changed_when: false
+  tags: [locale, system]
+
+# --- Keyboard ---
+- name: Set keyboard layout
+  command: >
+    localectl set-keymap {{ keyboard_layout }}
+  changed_when: false
+  tags: [keyboard, system]
+
+- name: Set X11 keyboard layout
+  command: >
+    localectl set-x11-keymap {{ keyboard_layout }}
+    {{ keyboard_model }} '' '{{ keyboard_options }}'
+  changed_when: false
+  tags: [keyboard, system]
+
+# --- Services ---
+- name: Enable system services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop: "{{ services_enabled }}"
+  tags: [services, system]
+
+- name: Enable host-specific services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop: "{{ services_extra | default([]) }}"
+  when: services_extra | default([]) | length > 0
+  tags: [services, system]
+
+# --- Environment ---
+- name: Configure fcitx5 env (/etc/environment)
+  copy:
+    src: "{{ playbook_dir }}/../files/environment"
+    dest: /etc/environment
+    mode: "0644"
+  tags: [env, system]
+
+# --- Network (static IP) ---
+- name: Configure static IP
+  template:
+    src: "{{ playbook_dir }}/../templates/network/10-interface.network.j2"
+    dest: /etc/systemd/network/10-{{ network_interface }}.network
+    mode: "0644"
+  notify: restart systemd-networkd
+  when: static_ip is defined
+  tags: [network, system]
+
+# --- WiFi (iwd) ---
+- name: Configure iwd WiFi password
+  template:
+    src: "{{ playbook_dir }}/../templates/iwd/network.psk.j2"
+    dest: /var/lib/iwd/{{ wifi_ssid }}.psk
+    mode: "0600"
+  notify: restart iwd
+  when: wifi_ssid is defined and wifi_password is defined
+  tags: [wifi, system]
+
+# --- DNS ---
+- name: Ensure resolved config directory exists
+  file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: "0755"
+  tags: [dns, system]
+
+- name: Configure DNS
+  copy:
+    dest: /etc/systemd/resolved.conf.d/dns.conf
+    content: |
+      [Resolve]
+      DNS={{ dns_servers | join(' ') }}
+      FallbackDNS={{ dns_fallback | join(' ') }}
+    mode: "0644"
+  notify: restart systemd-resolved
+  tags: [dns, system]
+
+# --- User ---
+- name: Add user to extra groups
+  user:
+    name: "{{ user_name }}"
+    groups: "{{ user_groups }}"
+    append: yes
+  tags: [user, system]
+
+# --- Passwords ---
+- name: Set root password
+  user:
+    name: root
+    password: "{{ root_password_hash | default('!') }}"
+  when: root_password_hash is defined
+  tags: [password, system]
+
+- name: Set {{ user_name }} password
+  user:
+    name: "{{ user_name }}"
+    password: "{{ user_password_hash | default('!') }}"
+  when: user_password_hash is defined
+  tags: [password, system]
+
+# --- Kernel modules ---
+- name: Load kernel modules
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ kernel_modules | default([]) }}"
+  tags: [kernel, system]
+
+# --- mkinitcpio ---
+- name: Ensure microcode hook in mkinitcpio
+  lineinfile:
+    path: /etc/mkinitcpio.conf
+    regexp: '^HOOKS='
+    line: 'HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)'
+  tags: [kernel, system]

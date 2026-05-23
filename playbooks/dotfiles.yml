@@ -1,0 +1,5 @@
+- name: Deploy dotfiles
+  hosts: all
+  become: yes
+  tasks:
+    - import_tasks: ../tasks/dotfiles.yml

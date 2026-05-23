@@ -1,0 +1,17 @@
+[Unit]
+Description=KeePassXC Password Manager
+Requires=rclone-mount.service
+After=rclone-mount.service
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Environment="QT_QPA_PLATFORM=wayland"
+Environment="XDG_CURRENT_DESKTOP=sway"
+ExecStartPre=/usr/bin/sleep 1
+ExecStart=/usr/bin/keepassxc
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,141 @@
+---
+- name: Ensure config directories exist
+  file:
+    path: "{{ user_home }}/{{ item }}"
+    state: directory
+    mode: "0700"
+  loop:
+    - .ssh
+    - .config/sway
+    - .config/fcitx5
+    - .config/gtk-3.0
+    - .config/keepassxc
+    - .config/rclone
+    - .config/systemd/user
+    - .config/systemd/user/default.target.wants
+    - .config/systemd/user/graphical-session.target.wants
+
+- name: Deploy common dotfiles
+  copy:
+    src: "{{ playbook_dir }}/../files/dotfiles/{{ item }}"
+    dest: "{{ user_home }}/{{ item }}"
+    mode: "0644"
+  loop: "{{ dotfiles_common }}"
+
+- name: Deploy sway config
+  copy:
+    src: "{{ playbook_dir }}/../files/dotfiles/{{ item }}"
+    dest: "{{ user_home }}/{{ item }}"
+    mode: "0644"
+  loop: "{{ dotfiles_sway }}"
+
+- name: Deploy fcitx5 config
+  copy:
+    src: "{{ playbook_dir }}/../files/dotfiles/{{ item }}"
+    dest: "{{ user_home }}/{{ item }}"
+    mode: "0644"
+  loop: "{{ dotfiles_fcitx5 }}"
+
+- name: Deploy GTK config
+  copy:
+    src: "{{ playbook_dir }}/../files/dotfiles/.config/gtk-3.0/settings.ini"
+    dest: "{{ user_home }}/.config/gtk-3.0/settings.ini"
+    mode: "0644"
+  tags: [gtk, dotfiles]
+
+- name: Deploy keepassxc config (from vault)
+  copy:
+    content: "{{ keepassxc_config }}"
+    dest: "{{ user_home }}/.config/keepassxc/keepassxc.ini"
+    mode: "0644"
+  when: keepassxc_config is defined
+  tags: [keepassxc, dotfiles]
+
+- name: Deploy rclone config (from template)
+  template:
+    src: "{{ playbook_dir }}/../templates/rclone/rclone.conf.j2"
+    dest: "{{ user_home }}/.config/rclone/rclone.conf"
+    mode: "0600"
+  when: rclone_webdav_user is defined
+  tags: [rclone, dotfiles]
+
+- name: Set script executable permissions
+  file:
+    path: "{{ user_home }}/.config/sway/switch_fcitx_group.sh"
+    mode: "0755"
+  ignore_errors: yes
+
+- name: Deploy SSH private key (from vault)
+  copy:
+    content: "{{ ssh_private_key }}"
+    dest: "{{ user_home }}/.ssh/id_ed25519"
+    mode: "0600"
+  when: ssh_private_key is defined
+  tags: [ssh, dotfiles]
+
+- name: Deploy SSH public key
+  copy:
+    content: "{{ ssh_public_key }}"
+    dest: "{{ user_home }}/.ssh/id_ed25519.pub"
+    mode: "0644"
+  when: ssh_public_key is defined
+  tags: [ssh, dotfiles]
+
+- name: Deploy SSH authorized keys (cross-trust)
+  copy:
+    content: "{{ ssh_authorized_keys }}"
+    dest: "{{ user_home }}/.ssh/authorized_keys"
+    mode: "0600"
+  when: ssh_authorized_keys is defined
+  tags: [ssh, dotfiles]
+
+# --- systemd user services ---
+- name: Deploy systemd user services
+  copy:
+    src: "{{ playbook_dir }}/../files/systemd/user/{{ item }}"
+    dest: "{{ user_home }}/.config/systemd/user/{{ item }}"
+    mode: "0644"
+  loop:
+    - rclone-mount.service
+    - keepassxc.service
+  tags: [systemd, dotfiles]
+
+- name: Create WebDAV mount directory
+  file:
+    path: "{{ user_home }}/webdav"
+    state: directory
+    mode: "0700"
+  tags: [systemd, dotfiles]
+
+- name: Enable rclone-mount user service
+  file:
+    src: "{{ user_home }}/.config/systemd/user/rclone-mount.service"
+    dest: "{{ user_home }}/.config/systemd/user/default.target.wants/rclone-mount.service"
+    state: link
+    force: yes
+  tags: [systemd, dotfiles]
+
+- name: Enable keepassxc user service (on graphical session)
+  file:
+    src: "{{ user_home }}/.config/systemd/user/keepassxc.service"
+    dest: "{{ user_home }}/.config/systemd/user/graphical-session.target.wants/keepassxc.service"
+    state: link
+    force: yes
+  tags: [systemd, dotfiles]
+
+- name: Enable linger (run user services without login)
+  command: loginctl enable-linger {{ user_name }}
+  become: no
+  changed_when: false
+  tags: [systemd, dotfiles]
+
+- name: Fix home directory ownership (fallback)
+  shell: |
+    for d in {{ user_home }}/* {{ user_home }}/.[!.]*; do
+      [ -e "$d" ] || continue
+      [ "$d" = "{{ user_home }}/webdav" ] && continue
+      chown -R {{ user_name }}:{{ user_name }} "$d"
+    done
+  become: no
+  changed_when: false
+  tags: [systemd, dotfiles]

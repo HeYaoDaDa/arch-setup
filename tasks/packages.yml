@@ -1,0 +1,95 @@
+---
+# --- pacman pre-config ---
+- name: Enable parallel downloads
+  lineinfile:
+    path: /etc/pacman.conf
+    regexp: '^#?ParallelDownloads'
+    line: 'ParallelDownloads = 10'
+  tags: [pacman, packages]
+
+- name: Install reflector (mirror tool)
+  pacman:
+    name: reflector
+    state: present
+  tags: [mirror, packages]
+
+- name: Update mirrors
+  command: >
+    reflector --country {{ pacman_mirror_country }}
+    --latest 10 --protocol https --sort rate
+    --save /etc/pacman.d/mirrorlist
+  when: pacman_mirror_country is defined
+  changed_when: false
+  tags: [mirror, packages]
+
+- name: Upgrade system
+  pacman:
+    update_cache: yes
+    upgrade: yes
+  tags: [upgrade, packages]
+
+- name: Install core packages
+  pacman:
+    name: "{{ packages_core }}"
+    state: present
+  tags: [packages]
+
+- name: Install host-specific packages
+  pacman:
+    name: "{{ packages_extra | default([]) }}"
+    state: present
+  when: packages_extra | default([]) | length > 0
+  tags: [packages]
+
+- name: Install microcode
+  pacman:
+    name: "{{ microcode }}"
+    state: present
+  tags: [microcode, packages]
+
+- name: Ensure user {{ user_name }} exists
+  user:
+    name: "{{ user_name }}"
+    groups: "{{ user_groups }}"
+    create_home: yes
+    shell: /bin/bash
+  tags: [aur, packages]
+
+- name: Install yay (AUR helper)
+  shell: |
+    rm -rf /tmp/yay-bin
+    runuser -u {{ user_name }} -- bash -c '\
+      cd /tmp && \
+      git clone https://aur.archlinux.org/yay-bin.git && \
+      cd yay-bin && makepkg -s --noconfirm \
+    '
+  args:
+    creates: /usr/bin/yay
+  tags: [aur, packages]
+
+- name: Install yay package (as root)
+  shell: |
+    pacman -U --noconfirm /tmp/yay-bin/*.pkg.tar.zst
+  args:
+    creates: /usr/bin/yay
+  tags: [aur, packages]
+
+- name: Allow wheel sudo without password (required by AUR)
+  copy:
+    src: "{{ playbook_dir }}/../files/sudoers.d/10-wheel-nopasswd"
+    dest: /etc/sudoers.d/10-wheel-nopasswd
+    mode: "0440"
+    validate: /usr/sbin/visudo -csf %s
+  tags: [aur, packages]
+
+- name: Install all AUR packages
+  shell: |
+    yay -S --noconfirm --needed {{ packages_aur | join(' ') }}
+  when: packages_aur | default([]) | length > 0
+  tags: [aur, packages]
+
+- name: Install host-specific AUR packages
+  shell: |
+    yay -S --noconfirm --needed {{ packages_aur_extra | default([]) | join(' ') }}
+  when: packages_aur_extra | default([]) | length > 0
+  tags: [aur, packages]

@@ -1,0 +1,139 @@
+---
+# ─── 所有机器共享配置（整合版，2026-05） ───
+
+# ─── 用户 ───
+user_name: wilson
+user_home: /home/wilson
+user_groups: [wheel, lxd, video]
+
+# ─── 时区 / 语言 ───
+timezone: Asia/Singapore
+locale: en_US.UTF-8
+keyboard_layout: us
+keyboard_model: pc105+inet
+keyboard_options: terminate:ctrl_alt_bksp
+
+# ─── 镜像源 ───
+pacman_mirror_country: China
+
+# ─── 包管理说明 ───
+# packages_core:      所有机器都装的官方包（pacman）
+# packages_aur:       所有机器都装的 AUR 包
+
+packages_core:
+  # ── 基础工具 ──
+  - git
+  - openssh
+  - jq
+  - ripgrep
+  - fd
+  - rsync
+  - curl
+  - wget
+  # ── 构建工具 ──
+  - base-devel
+  - debugedit
+  # ── 开发 ──
+  - nodejs
+  - npm
+  - python
+  # ── 容器 ──
+  - lxd
+  # ── 固件 ──
+  - linux-firmware
+  - sof-firmware
+  # ── Wayland 桌面 ──
+  - foot
+  - fuzzel
+  - grim
+  - slurp
+  - wl-clipboard
+  - sway
+  - xorg-xwayland
+  - waybar
+  - mako
+  - xdg-desktop-portal-wlr
+  - egl-wayland
+  - qt5-wayland
+  - qt6-wayland
+  # ── 音视频 ──
+  - pipewire
+  - pipewire-alsa
+  - pipewire-jack
+  - pipewire-pulse
+  - wireplumber
+  - pavucontrol
+  - gst-plugin-pipewire
+  # ── 输入法 ──
+  - fcitx5
+  - fcitx5-configtool
+  - fcitx5-gtk
+  - fcitx5-qt
+  - fcitx5-rime
+  # ── 字体 ──
+  - noto-fonts
+  - noto-fonts-cjk
+  - noto-fonts-emoji
+  - otf-font-awesome
+  # ── 工具 ──
+  - keepassxc
+  - rclone
+  - reflector
+  - ttf-nerd-fonts-symbols
+  - ffmpeg
+  - firefox
+  - rustup
+  # ── 显卡 ──
+  - mesa
+  - libva
+  - libva-utils
+
+# AUR 包
+packages_aur:
+  - visual-studio-code-bin
+  - wechat-bin
+  - linuxqq
+  - clash-verge-rev-bin
+  - rime-ice-pinyin-git
+
+# ─── 服务 ───
+services_enabled:
+  - sshd
+  - systemd-networkd
+  - systemd-resolved
+  - systemd-timesyncd
+  - lxd
+
+# ─── DNS ───
+dns_servers:
+  - 192.168.10.2
+dns_fallback:
+  - 223.5.5.5
+  - 114.114.114.114
+  - 119.29.29.29
+
+# ─── 内核 ───
+kernel_modules:
+  - kvm-intel
+
+microcode: intel-ucode
+
+# ─── dotfiles ───
+dotfiles_common:
+  - .bashrc
+  - .bash_profile
+  - .gitconfig
+
+dotfiles_sway:
+  - .config/sway/config
+  - .config/sway/switch_fcitx_group.sh
+
+dotfiles_fcitx5:
+  - .config/fcitx5/profile
+  - .config/fcitx5/config
+
+
+# ─── 网络 ───
+network_interface: enp7s0
+netmask: 24
+gateway: 192.168.10.2

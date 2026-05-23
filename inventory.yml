@@ -1,0 +1,7 @@
+---
+all:
+  hosts:
+    desktop-arch-i712700:
+      # 台式机：i7-12700 + Intel UHD 770 + Arc A380
+    laptop-arch-p50:
+      # 笔记本：ThinkPad P50

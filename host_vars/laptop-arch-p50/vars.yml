@@ -1,0 +1,36 @@
+---
+# ─── 笔记本独有配置 ───
+
+hostname: laptop-arch-p50
+chassis: laptop
+
+# CPU
+cpu:
+  vendor: Intel
+  model: "Intel(R) Xeon(R) E3-1505M v5"
+  microcode: intel-ucode
+
+# 显卡
+gpu:
+  vendor: NVIDIA
+  driver: nvidia
+
+# 网络
+network_interface: wlan0
+static_ip: 192.168.10.26
+
+# 笔记本专用包
+packages_extra:
+  - brightnessctl
+  - iwd
+
+# 笔记本专用服务
+services_extra:
+  - iwd
+
+# WiFi
+wifi_ssid: FAST_0094
+
+# 笔记本特有
+battery_threshold: 80
+lid_close_action: suspend

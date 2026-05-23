@@ -1,0 +1,44 @@
+---
+- name: System setup (without cleanup)
+  hosts: all
+  connection: local
+  become: yes
+  vars_files:
+    - ../vars/secrets.yml
+
+  tasks:
+    - name: Install packages
+      import_tasks: ../tasks/packages.yml
+      tags: [packages]
+
+    - name: System configuration
+      import_tasks: ../tasks/system.yml
+      tags: [system]
+
+    - name: Deploy dotfiles
+      import_tasks: ../tasks/dotfiles.yml
+      become: yes
+      become_user: "{{ user_name }}"
+      tags: [dotfiles]
+
+    - name: Done
+      debug:
+        msg: |
+          [OK] {{ hostname }} setup complete!
+          Reboot recommended to apply all changes.
+
+  handlers:
+    - name: restart systemd-networkd
+      systemd:
+        name: systemd-networkd
+        state: restarted
+
+    - name: restart iwd
+      systemd:
+        name: iwd
+        state: restarted
+
+    - name: restart systemd-resolved
+      systemd:
+        name: systemd-resolved
+        state: restarted
