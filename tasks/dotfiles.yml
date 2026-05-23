@@ -89,6 +89,13 @@
   when: ssh_authorized_keys is defined
   tags: [ssh, dotfiles]
 
+- name: Deploy SSH client config (github.com via port 443)
+  copy:
+    src: "{{ playbook_dir }}/../files/dotfiles/.ssh/config"
+    dest: "{{ user_home }}/.ssh/config"
+    mode: "0600"
+  tags: [ssh, dotfiles]
+
 # --- systemd user services ---
 - name: Deploy systemd user services
   copy:
