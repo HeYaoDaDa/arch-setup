@@ -5,7 +5,12 @@ set -e
 cd "$(dirname "$0")"
 
 # Detect current hostname
+# When run inside arch-chroot, uname -n returns 'archiso' instead of the target hostname.
+# Fall back to /etc/hostname if that happens.
 HOST=$(uname -n)
+if [ "$HOST" = "archiso" ] && [ -f /etc/hostname ]; then
+    HOST=$(cat /etc/hostname)
+fi
 
 # Check if host is in inventory
 if ! grep -q "$HOST" inventory.yml 2>/dev/null; then
