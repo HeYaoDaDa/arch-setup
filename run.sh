@@ -60,11 +60,17 @@ else
     VAULT_OPT="--ask-vault-pass"
 fi
 
+# Check if sudo is passwordless (skip -K if yes)
+BECOME_OPT="-K"
+if sudo -n true 2>/dev/null; then
+    BECOME_OPT=""
+fi
+
 # Execute
 ansible-playbook playbooks/setup.yml \
   -l "$HOST" \
   $VAULT_OPT \
-  -K "$@"
+  $BECOME_OPT "$@"
 
 echo ""
 echo "[OK] $HOST configured successfully!"
