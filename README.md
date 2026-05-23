@@ -38,9 +38,12 @@ sudo pacman -S ansible
 VAULT_PASS=your-vault-password ./run.sh
 ```
 
+> ⚠️ 首次运行会提示输入 sudo 密码（BECOME password），用于 ansible 提权安装包和配置系统。
+> 如果已经配好 sudo 免密码，则不会弹窗。
+
 ### Vault 加密
 
-敏感信息（密码、密钥）使用 Ansible Vault 加密，存储在 `vars/secrets.yml` 和 `host_vars/*-vault.yml` 中。
+敏感信息（密码、密钥）使用 Ansible Vault 加密，存储在 `vars/secrets.yml` 和 `host_vars/*/vault.yml` 中。
 
 ```bash
 # 查看加密内容
@@ -61,11 +64,18 @@ VAULT_PASS=your-vault-password ./run.sh
 ```
 ├── run.sh                  # 一键运行
 ├── inventory.yml           # 主机清单
+├── AGENTS.md               # Agent 工作规则
 ├── group_vars/all.yml      # 通用配置
 ├── host_vars/              # 各主机独有配置
 ├── vars/secrets.yml        # 加密密钥
 ├── playbooks/              # Ansible playbook
 ├── tasks/                  # 任务定义
 ├── files/                  # 静态文件
+│   ├── dotfiles/           # 用户配置文件
+│   ├── systemd/            # systemd 服务配置
+│   └── sudoers.d/          # sudo 规则
 └── templates/              # Jinja2 模板
+    ├── iwd/                # WiFi 配置模板
+    ├── network/            # 网络配置模板
+    └── rclone/             # rclone 配置模板
 ```
