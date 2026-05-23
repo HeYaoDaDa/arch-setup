@@ -1,5 +1,5 @@
 ---
-# --- Hostname ---
+# --- 主机名 ---
 - name: Set hostname
   hostname:
     name: "{{ hostname }}"
@@ -12,13 +12,13 @@
     line: "127.0.1.1 {{ hostname }}.local {{ hostname }}"
   tags: [hostname, system]
 
-# --- Timezone ---
+# --- 时区 ---
 - name: Set timezone
   timezone:
     name: "{{ timezone }}"
   tags: [timezone, system]
 
-# --- Locale ---
+# --- 语言环境 ---
 - name: Generate locale
   locale_gen:
     name: "{{ locale }}"
@@ -30,7 +30,7 @@
   changed_when: false
   tags: [locale, system]
 
-# --- Keyboard ---
+# --- 键盘布局 ---
 - name: Set keyboard layout
   command: >
     localectl set-keymap {{ keyboard_layout }}
@@ -44,7 +44,7 @@
   changed_when: false
   tags: [keyboard, system]
 
-# --- Services ---
+# --- 服务 ---
 - name: Enable system services
   systemd:
     name: "{{ item }}"
@@ -62,7 +62,7 @@
   when: services_extra | default([]) | length > 0
   tags: [services, system]
 
-# --- Laptop lid behavior ---
+# --- 笔记本合盖行为 ---
 - name: Configure lid switch behavior (ignore)
   copy:
     src: "{{ playbook_dir }}/../files/systemd/logind.conf.d/lid.conf"
@@ -72,7 +72,7 @@
   notify: restart systemd-logind
   tags: [lid, system]
 
-# --- Environment ---
+# --- 环境变量 ---
 - name: Configure fcitx5 env (/etc/environment)
   copy:
     src: "{{ playbook_dir }}/../files/environment"
@@ -80,7 +80,7 @@
     mode: "0644"
   tags: [env, system]
 
-# --- Network (static IP) ---
+# --- 网络（静态 IP） ---
 - name: Configure static IP
   template:
     src: "{{ playbook_dir }}/../templates/network/10-interface.network.j2"
@@ -90,7 +90,7 @@
   when: static_ip is defined
   tags: [network, system]
 
-# --- WiFi (iwd) ---
+# --- WiFi（iwd） ---
 - name: Configure iwd WiFi password
   template:
     src: "{{ playbook_dir }}/../templates/iwd/network.psk.j2"
@@ -119,7 +119,7 @@
   notify: restart systemd-resolved
   tags: [dns, system]
 
-# --- User ---
+# --- 用户 ---
 - name: Add user to extra groups
   user:
     name: "{{ user_name }}"
@@ -127,7 +127,7 @@
     append: yes
   tags: [user, system]
 
-# --- Passwords ---
+# --- 密码 ---
 - name: Set root password
   user:
     name: root
@@ -142,7 +142,7 @@
   when: user_password_hash is defined
   tags: [password, system]
 
-# --- Kernel modules ---
+# --- 内核模块 ---
 - name: Load kernel modules
   modprobe:
     name: "{{ item }}"

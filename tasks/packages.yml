@@ -1,5 +1,5 @@
 ---
-# --- pacman pre-config ---
+# --- pacman 预配置 ---
 - name: Enable parallel downloads
   lineinfile:
     path: /etc/pacman.conf
