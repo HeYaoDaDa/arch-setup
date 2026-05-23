@@ -21,6 +21,11 @@
       become_user: "{{ user_name }}"
       tags: [dotfiles]
 
+    - name: Setup Mihomo proxy
+      import_tasks: ../tasks/mihomo.yml
+      when: inventory_hostname in groups['routers'] | default([])
+      tags: [mihomo, proxy]
+
     - name: Done
       debug:
         msg: |
@@ -47,3 +52,9 @@
       systemd:
         name: systemd-logind
         state: restarted
+
+    - name: restart mihomo
+      systemd:
+        name: mihomo
+        state: restarted
+        daemon_reload: yes

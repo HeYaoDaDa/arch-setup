@@ -1,0 +1,50 @@
+---
+# ─── 无头路由器专用配置（覆盖 all.yml 的重型变量） ───
+
+# 用户组（覆盖 all.yml —— 路由器不需要 lxd、video）
+user_groups: [wheel]
+
+# 极简包列表（完全替换 all.yml 的重型桌面包）
+packages_core:
+  - git
+  - openssh
+  - base-devel
+  - jq
+  - curl
+  - wget
+  - rsync
+  - vim
+  - net-tools
+  - bind
+
+# AUR 包
+packages_aur:
+  - mihomo-bin
+
+# 服务（不需要 lxd、桌面相关服务）
+services_enabled:
+  - sshd
+  - systemd-networkd
+  - systemd-resolved
+  - systemd-timesyncd
+
+# 不需要桌面相关的东西
+packages_extra: []
+packages_aur_extra: []
+services_extra: []
+
+# 不需要 dotfiles
+dotfiles_common: []
+dotfiles_sway: []
+dotfiles_fcitx5: []
+
+# 不需要桌面环境变量
+# （不部署 /etc/environment）
+
+# 不需要桌面内核模块
+kernel_modules: []
+
+# ─── Mihomo UI（yacd dashboard） ───
+mihomo_ui_enabled: true
+mihomo_ui_url: https://github.com/haishanh/yacd/releases/download/v0.3.8/yacd.tar.xz
+mihomo_ui_dir: /etc/mihomo/public

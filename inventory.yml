@@ -5,3 +5,8 @@ all:
       # 台式机：i7-12700 + Intel UHD 770 + Arc A380
     laptop-arch-p50:
       # 笔记本：ThinkPad P50
+  children:
+    routers:
+      hosts:
+        laptop-router-arch-x201e:
+          # 软路由：ThinkPad X201e (i3-3217U)，替换原 Debian 软路由

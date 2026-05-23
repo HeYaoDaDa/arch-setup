@@ -1,0 +1,29 @@
+---
+# ─── 新软路由独有配置（替换现有 Debian 软路由） ───
+
+hostname: laptop-router-arch-x201e
+chassis: laptop
+
+# CPU
+cpu:
+  vendor: Intel
+  model: "Intel Core i3-3217U"
+  microcode: intel-ucode
+
+# 网络（替换原 192.168.10.2 软路由）
+network_interface: enp2s0
+static_ip: 192.168.10.2
+gateway: 192.168.10.1
+netmask: 24
+
+# 笔记本专用包
+packages_extra: []
+
+# 笔记本专用服务
+services_extra:
+  - mihomo
+
+# 无 WiFi（x201e 没有无线网卡）
+
+# 合盖行为（无头模式，合盖不影响运行）
+lid_close_action: ignore

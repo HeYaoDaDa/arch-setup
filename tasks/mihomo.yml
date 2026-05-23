@@ -1,0 +1,42 @@
+---
+# ─── Mihomo 代理部署（路由器专用） ───
+
+- name: Ensure /etc/mihomo exists
+  file:
+    path: /etc/mihomo
+    state: directory
+    mode: "0755"
+  tags: [mihomo, proxy]
+
+- name: Download yacd dashboard
+  unarchive:
+    src: "{{ mihomo_ui_url }}"
+    dest: /etc/mihomo
+    remote_src: yes
+    creates: /etc/mihomo/public/index.html
+  when: mihomo_ui_enabled | default(false)
+  tags: [mihomo, proxy, ui]
+
+- name: Deploy mihomo configuration
+  copy:
+    content: "{{ mihomo_config }}"
+    dest: /etc/mihomo/config.yaml
+    mode: "0600"
+  notify: restart mihomo
+  when: mihomo_config is defined
+  tags: [mihomo, proxy]
+
+- name: Enable mihomo service
+  systemd:
+    name: mihomo
+    enabled: yes
+    daemon_reload: yes
+  when: mihomo_config is defined
+  tags: [mihomo, proxy]
+
+- name: Start mihomo service
+  systemd:
+    name: mihomo
+    state: started
+  when: mihomo_config is defined
+  tags: [mihomo, proxy]
