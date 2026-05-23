@@ -62,6 +62,16 @@
   when: services_extra | default([]) | length > 0
   tags: [services, system]
 
+# --- Laptop lid behavior ---
+- name: Configure lid switch behavior (ignore)
+  copy:
+    src: "{{ playbook_dir }}/../files/systemd/logind.conf.d/lid.conf"
+    dest: /etc/systemd/logind.conf.d/lid.conf
+    mode: "0644"
+  when: lid_close_action is defined and lid_close_action == 'ignore'
+  notify: restart systemd-logind
+  tags: [lid, system]
+
 # --- Environment ---
 - name: Configure fcitx5 env (/etc/environment)
   copy:

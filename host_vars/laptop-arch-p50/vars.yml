@@ -33,4 +33,4 @@ wifi_ssid: FAST_0094
 
 # 笔记本特有
 battery_threshold: 80
-lid_close_action: suspend
+lid_close_action: ignore
