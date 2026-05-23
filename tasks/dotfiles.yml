@@ -134,6 +134,8 @@
   file:
     path: /var/lib/systemd/linger/{{ user_name }}
     state: touch
+    mode: "0644"
+  become_user: root
   tags: [systemd, dotfiles]
 
 - name: Fix home directory ownership (fallback)
