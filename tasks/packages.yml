@@ -84,12 +84,12 @@
 
 - name: Install all AUR packages
   shell: |
-    yay -S --noconfirm --needed {{ packages_aur | join(' ') }}
+    runuser -u {{ user_name }} -- yay -S --noconfirm --needed {{ packages_aur | join(' ') }}
   when: packages_aur | default([]) | length > 0
   tags: [aur, packages]
 
 - name: Install host-specific AUR packages
   shell: |
-    yay -S --noconfirm --needed {{ packages_aur_extra | default([]) | join(' ') }}
+    runuser -u {{ user_name }} -- yay -S --noconfirm --needed {{ packages_aur_extra | default([]) | join(' ') }}
   when: packages_aur_extra | default([]) | length > 0
   tags: [aur, packages]
