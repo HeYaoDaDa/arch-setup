@@ -13,9 +13,18 @@
   tags: [hostname, system]
 
 # --- 时区 ---
-- name: Set timezone
-  timezone:
-    name: "{{ timezone }}"
+- name: Set timezone via symlink (arch-chroot compatible)
+  file:
+    src: "/usr/share/zoneinfo/{{ timezone }}"
+    dest: /etc/localtime
+    state: link
+    force: yes
+  tags: [timezone, system]
+
+- name: Refresh systemd-timedated cache (running system)
+  command: timedatectl set-timezone {{ timezone }}
+  when: ansible_service_mgr == "systemd"
+  changed_when: false
   tags: [timezone, system]
 
 # --- 语言环境 ---
