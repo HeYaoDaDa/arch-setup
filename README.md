@@ -1,6 +1,6 @@
 # arch-setup
 
-基于 Ansible 的 Arch Linux 桌面环境一键配置工具。
+基于 Ansible 的 Arch Linux 桌面/软路由一键配置工具。
 
 ## 快速开始
 
@@ -20,6 +20,8 @@ VAULT_PASS=your-vault-password ./run.sh
 | 桌面 | sway、waybar、fcitx5 输入法、PipeWire 音频 |
 | dotfiles | bashrc、bash_profile、sway 配置、fcitx5 配置、GTK 设置 |
 | 存储 | rclone WebDAV 挂载 |
+| 代理 | FusionTunX + mihomo 透明代理（路由器） |
+| 转发 | SSH 端口转发 + nftables DNAT（路由器） |
 | 定时 | reflector 定时更新镜像源 |
 
 ## 使用
@@ -62,20 +64,26 @@ VAULT_PASS=your-vault-password ./run.sh
 ## 项目结构
 
 ```
+├── ansible.cfg             # Ansible 配置
 ├── run.sh                  # 一键运行
 ├── inventory.yml           # 主机清单
 ├── AGENTS.md               # Agent 工作规则
-├── group_vars/all.yml      # 通用配置
-├── host_vars/              # 各主机独有配置
-├── vars/secrets.yml        # 加密密钥
+├── group_vars/
+│   ├── all.yml             # 通用配置
+│   └── routers.yml         # 路由器组覆盖配置
+├── host_vars/              # 各主机独有配置（含 vault 加密）
+├── vars/secrets.yml        # 全局加密密钥（Vault）
 ├── playbooks/              # Ansible playbook
 ├── tasks/                  # 任务定义
 ├── files/                  # 静态文件
 │   ├── dotfiles/           # 用户配置文件
+│   ├── environment         # 全局环境变量（fcitx5）
 │   ├── systemd/            # systemd 服务配置
 │   └── sudoers.d/          # sudo 规则
 └── templates/              # Jinja2 模板
     ├── iwd/                # WiFi 配置模板
     ├── network/            # 网络配置模板
-    └── rclone/             # rclone 配置模板
+    ├── rclone/             # rclone 配置模板
+    ├── fusiontunx/         # 代理配置模板
+    └── ssh-forward.service.j2  # SSH 端口转发模板
 ```

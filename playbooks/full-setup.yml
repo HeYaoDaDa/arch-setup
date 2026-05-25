@@ -62,6 +62,11 @@
         name: systemd-resolved
         state: restarted
 
+    - name: restart systemd-logind
+      systemd:
+        name: systemd-logind
+        state: restarted
+
     - name: restart fusiontunx
       systemd:
         name: fusiontunx

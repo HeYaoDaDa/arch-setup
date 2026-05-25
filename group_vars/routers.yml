@@ -30,6 +30,7 @@ services_enabled:
   - systemd-networkd
   - systemd-resolved
   - systemd-timesyncd
+  - reflector.timer
   - fusiontunx
 
 # 不需要桌面相关的东西

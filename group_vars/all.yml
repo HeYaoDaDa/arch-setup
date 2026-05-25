@@ -103,6 +103,7 @@ services_enabled:
   - systemd-resolved
   - systemd-timesyncd
   - lxd
+  - reflector.timer
 
 # ─── DNS ───
 dns_servers:

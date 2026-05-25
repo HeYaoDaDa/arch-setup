@@ -1,5 +1,5 @@
 ---
-# --- 主机名 ---
+# ─── 主机名 ───
 - name: Set hostname
   hostname:
     name: "{{ hostname }}"
@@ -12,7 +12,7 @@
     line: "127.0.1.1 {{ hostname }}.local {{ hostname }}"
   tags: [hostname, system]
 
-# --- 时区 ---
+# ─── 时区 ───
 - name: Set timezone via symlink (arch-chroot compatible)
   file:
     src: "/usr/share/zoneinfo/{{ timezone }}"
@@ -27,7 +27,7 @@
   changed_when: false
   tags: [timezone, system]
 
-# --- 语言环境 ---
+# ─── 语言环境 ───
 - name: Generate locale
   locale_gen:
     name: "{{ locale }}"
@@ -39,7 +39,7 @@
   changed_when: false
   tags: [locale, system]
 
-# --- 键盘布局 ---
+# ─── 键盘布局 ───
 - name: Set keyboard layout
   command: >
     localectl set-keymap {{ keyboard_layout }}
@@ -53,7 +53,7 @@
   changed_when: false
   tags: [keyboard, system]
 
-# --- 服务 ---
+# ─── 服务 ───
 - name: Enable system services
   systemd:
     name: "{{ item }}"
@@ -69,7 +69,7 @@
   when: services_extra | default([]) | length > 0
   tags: [services, system]
 
-# --- 笔记本合盖行为 ---
+# ─── 笔记本合盖行为 ───
 - name: Ensure logind override directory exists
   file:
     path: /etc/systemd/logind.conf.d
@@ -87,7 +87,7 @@
   notify: restart systemd-logind
   tags: [lid, system]
 
-# --- 环境变量 ---
+# ─── 环境变量 ───
 - name: Configure fcitx5 env (/etc/environment)
   copy:
     src: "{{ playbook_dir }}/../files/environment"
@@ -95,7 +95,7 @@
     mode: "0644"
   tags: [env, system]
 
-# --- 网络（静态 IP） ---
+# ─── 网络（静态 IP） ───
 - name: Configure static IP
   template:
     src: "{{ playbook_dir }}/../templates/network/10-interface.network.j2"
@@ -105,7 +105,7 @@
   when: static_ip is defined
   tags: [network, system]
 
-# --- WiFi（iwd） ---
+# ─── WiFi（iwd） ───
 - name: Configure iwd WiFi password
   template:
     src: "{{ playbook_dir }}/../templates/iwd/network.psk.j2"
@@ -115,7 +115,7 @@
   when: wifi_ssid is defined and wifi_password is defined
   tags: [wifi, system]
 
-# --- DNS ---
+# ─── DNS ───
 - name: Ensure resolved config directory exists
   file:
     path: /etc/systemd/resolved.conf.d
@@ -134,7 +134,7 @@
   notify: restart systemd-resolved
   tags: [dns, system]
 
-# --- 用户 ---
+# ─── 用户 ───
 - name: Add user to extra groups
   user:
     name: "{{ user_name }}"
@@ -142,7 +142,7 @@
     append: yes
   tags: [user, system]
 
-# --- 密码 ---
+# ─── 密码 ───
 - name: Set root password
   user:
     name: root
@@ -157,7 +157,7 @@
   when: user_password_hash is defined
   tags: [password, system]
 
-# --- 内核模块 ---
+# ─── 内核模块 ───
 - name: Load kernel modules
   modprobe:
     name: "{{ item }}"
@@ -165,7 +165,7 @@
   loop: "{{ kernel_modules | default([]) }}"
   tags: [kernel, system]
 
-# --- mkinitcpio ---
+# ─── mkinitcpio ───
 - name: Ensure microcode hook in mkinitcpio
   lineinfile:
     path: /etc/mkinitcpio.conf

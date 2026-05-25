@@ -96,7 +96,7 @@
     mode: "0600"
   tags: [ssh, dotfiles]
 
-# --- systemd 用户服务 ---
+# ─── systemd 用户服务 ───
 - name: Deploy systemd user services
   copy:
     src: "{{ playbook_dir }}/../files/systemd/user/{{ item }}"

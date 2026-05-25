@@ -1,5 +1,5 @@
 ---
-# --- pacman 预配置 ---
+# ─── pacman 预配置 ───
 - name: Enable parallel downloads
   lineinfile:
     path: /etc/pacman.conf
@@ -20,6 +20,21 @@
     --save /etc/pacman.d/mirrorlist
   when: pacman_mirror_country is defined
   changed_when: false
+  tags: [mirror, packages]
+
+- name: Configure reflector timer
+  copy:
+    dest: /etc/xdg/reflector/reflector.conf
+    content: |
+      # Reflector configuration for arch-setup
+      # Managed by Ansible - do not edit manually
+      --country {{ pacman_mirror_country | default('') }}
+      --latest 10
+      --protocol https
+      --sort rate
+      --save /etc/pacman.d/mirrorlist
+    mode: "0644"
+  when: pacman_mirror_country is defined
   tags: [mirror, packages]
 
 - name: Upgrade system
