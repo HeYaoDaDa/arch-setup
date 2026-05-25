@@ -4,6 +4,9 @@
 # 用户组（覆盖 all.yml —— 路由器不需要 lxd、video）
 user_groups: [wheel]
 
+# 启用的转发和 NAT（仅在路由器上生效）
+ip_forward: true
+
 # 极简包列表（完全替换 all.yml 的重型桌面包）
 packages_core:
   - git
@@ -19,7 +22,7 @@ packages_core:
 
 # AUR 包
 packages_aur:
-  - mihomo-bin
+  - fusiontunx
 
 # 服务（不需要 lxd、桌面相关服务）
 services_enabled:
@@ -27,6 +30,7 @@ services_enabled:
   - systemd-networkd
   - systemd-resolved
   - systemd-timesyncd
+  - fusiontunx
 
 # 不需要桌面相关的东西
 packages_extra: []
@@ -44,7 +48,4 @@ dotfiles_fcitx5: []
 # 不需要桌面内核模块
 kernel_modules: []
 
-# ─── Mihomo UI（yacd dashboard） ───
-mihomo_ui_enabled: true
-mihomo_ui_url: https://github.com/haishanh/yacd/releases/download/v0.3.8/yacd.tar.xz
-mihomo_ui_dir: /etc/mihomo/public
+

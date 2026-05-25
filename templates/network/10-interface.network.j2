@@ -4,6 +4,10 @@ Name={{ network_interface }}
 [Network]
 Address={{ static_ip }}/{{ netmask | default('24') }}
 Gateway={{ gateway }}
+{% if ip_forward is defined and ip_forward %}
+IPv4Forwarding=yes
+IPMasquerade=ipv4
+{% endif %}
 {% for dns in dns_servers %}
 DNS={{ dns }}
 {% endfor %}

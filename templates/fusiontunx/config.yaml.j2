@@ -1,0 +1,181 @@
+mixed-port: 7893
+tproxy-port: 7894
+allow-lan: true
+bind-address: "*"
+mode: rule
+log-level: info
+ipv6: false
+external-controller: 0.0.0.0:9090
+external-ui: ui
+geodata-mode: true
+geodata-loader: memconservative
+global-client-fingerprint: chrome
+tcp-concurrent: true
+unified-delay: true
+routing-mark: 256
+tun:
+  enable: false
+dns:
+  enable: true
+  listen: {{ static_ip }}:53
+  ipv6: false
+  enhanced-mode: redir-host
+  default-nameserver:
+    - {{ gateway }}
+  nameserver:
+    - {{ gateway }}
+  proxy-server-nameserver:
+    - {{ gateway }}
+  fallback:
+    - {{ gateway }}
+    - https://dns.alidns.com/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite:
+      - gfw
+proxy-providers:
+  airport:
+    type: http
+    url: "{{ airport_subscription_url }}"
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+proxy-groups:
+- name: Proxy
+  type: select
+  proxies:
+  - "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Priority"
+  - Auto
+  - "\U0001F1ED\U0001F1F0\u9999\u6e2f HK-Auto"
+  - "\U0001F1F9\U0001F1FC\u53f0\u6e7e TW-Auto"
+  - "\U0001F1F0\U0001F1F7\u97e9\u56fd KR-Auto"
+  - "\U0001F1EF\U0001F1F5\u65e5\u672c JP-Auto"
+  - "\U0001F1EE\U0001F1F3\u5370\u5ea6 IN-Auto"
+  - "\U0001F1E6\U0001F1EA\u8fea\u62dc AE-Auto"
+  - "\U0001F1E8\U0001F1ED\u745e\u58eb CH-Auto"
+  - "\U0001F1E6\U0001F1FA\u6fb3\u5927\u5229\u4e9a AU-Auto"
+  - "\U0001F1FA\U0001F1F8\u7f8e\u56fd US-Auto"
+  - Manual
+  - DIRECT
+
+- name: "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u65b0\u52a0\u5761|SG|singapore"
+
+- name: Auto
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+
+- name: "\U0001F1ED\U0001F1F0\u9999\u6e2f HK-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u9999\u6e2f|HK|hong kong"
+
+- name: "\U0001F1F9\U0001F1FC\u53f0\u6e7e TW-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u53f0\u6e7e|TW|taiwan"
+
+- name: "\U0001F1F0\U0001F1F7\u97e9\u56fd KR-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u97e9\u56fd|KR|korea|seoul"
+
+- name: "\U0001F1EF\U0001F1F5\u65e5\u672c JP-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u65e5\u672c|JP|japan|tokyo|osaka"
+
+- name: "\U0001F1EE\U0001F1F3\u5370\u5ea6 IN-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u5370\u5ea6|IN|india"
+
+- name: "\U0001F1E6\U0001F1EA\u8fea\u62dc AE-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u8fea\u62dc|AE|dubai"
+
+- name: "\U0001F1E8\U0001F1ED\u745e\u58eb CH-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u745e\u58eb|CH|zurich|swiss"
+
+- name: "\U0001F1E6\U0001F1FA\u6fb3\u5927\u5229\u4e9a AU-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u6fb3\u5927\u5229\u4e9a|AU|australia"
+
+- name: "\U0001F1FA\U0001F1F8\u7f8e\u56fd US-Auto"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - airport
+  filter: "(?i)\u7f8e\u56fd|US|united states|los angeles|san jose|ashburn"
+
+- name: "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Priority"
+  type: fallback
+  proxies:
+  - "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Auto"
+  - Auto
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+
+- name: Manual
+  type: select
+  use:
+  - airport
+
+rules:
+  - GEOSITE,category-ads-all,REJECT
+  - GEOSITE,private,DIRECT
+  - GEOSITE,microsoft,DIRECT
+  - GEOSITE,apple,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,Proxy

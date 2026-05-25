@@ -20,8 +20,12 @@ netmask: 24
 packages_extra: []
 
 # 笔记本专用服务
-services_extra:
-  - mihomo
+services_extra: []
+
+# SSH 端口转发（外网 → ASUS 公网 1811 → 本机 → 目标机器 22）
+ssh_forward_port: 1811
+ssh_forward_target: 192.168.10.25
+ssh_forward_target_port: 22
 
 # 无 WiFi（x201e 没有无线网卡）
 

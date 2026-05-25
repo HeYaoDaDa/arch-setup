@@ -21,10 +21,16 @@
       become_user: "{{ user_name }}"
       tags: [dotfiles]
 
-    - name: Setup Mihomo proxy
-      import_tasks: ../tasks/mihomo.yml
+    - name: Load airport subscription URL
+      include_vars:
+        file: "../host_vars/{{ inventory_hostname }}/airport_subscription_url.vault.yml"
       when: inventory_hostname in groups['routers'] | default([])
-      tags: [mihomo, proxy]
+      tags: [fusiontunx, proxy]
+
+    - name: Setup FusionTunX proxy
+      import_tasks: ../tasks/fusiontunx.yml
+      when: inventory_hostname in groups['routers'] | default([])
+      tags: [fusiontunx, proxy]
 
     - name: Done
       debug:
@@ -53,8 +59,8 @@
         name: systemd-logind
         state: restarted
 
-    - name: restart mihomo
+    - name: restart fusiontunx
       systemd:
-        name: mihomo
+        name: fusiontunx
         state: restarted
         daemon_reload: yes

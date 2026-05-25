@@ -1,0 +1,62 @@
+---
+# ─── FusionTunX 部署 ───
+# FusionTunX 包自带 systemd service，安装后自动启用
+# 访问 http://<router-ip>:8080 打开 Web UI
+
+- name: Ensure FusionTunX directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /etc/fusiontunx/configs
+    - /etc/fusiontunx/proxy_providers
+    - /etc/fusiontunx/rule_providers
+  tags: [fusiontunx, proxy]
+
+- name: Deploy FusionTunX app.yaml
+  template:
+    src: "{{ playbook_dir }}/../templates/fusiontunx/app.yaml.j2"
+    dest: /etc/fusiontunx/app.yaml
+    mode: "0644"
+  notify: restart fusiontunx
+  tags: [fusiontunx, proxy]
+
+- name: Deploy SSH forward systemd service
+  template:
+    src: "{{ playbook_dir }}/../templates/ssh-forward.service.j2"
+    dest: /etc/systemd/system/ssh-forward.service
+    mode: "0644"
+  when: ssh_forward_target is defined and ssh_forward_port is defined
+  tags: [fusiontunx, proxy, ssh-forward]
+
+- name: Enable and start SSH forward service
+  systemd:
+    name: ssh-forward
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  when: ssh_forward_target is defined and ssh_forward_port is defined
+  tags: [fusiontunx, proxy, ssh-forward]
+
+- name: Deploy FusionTunX config from template
+  template:
+    src: "{{ playbook_dir }}/../templates/fusiontunx/config.yaml.j2"
+    dest: /etc/fusiontunx/configs/config.yaml
+    mode: "0600"
+  notify: restart fusiontunx
+  tags: [fusiontunx, proxy]
+
+- name: Enable fusiontunx service
+  systemd:
+    name: fusiontunx
+    enabled: yes
+    daemon_reload: yes
+  tags: [fusiontunx, proxy]
+
+- name: Start fusiontunx service
+  systemd:
+    name: fusiontunx
+    state: started
+    daemon_reload: yes
+  tags: [fusiontunx, proxy]
