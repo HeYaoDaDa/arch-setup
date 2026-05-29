@@ -23,11 +23,11 @@
   loop: "{{ dotfiles_common }}"
 
 - name: Deploy sway config
-  copy:
-    src: "{{ playbook_dir }}/../files/dotfiles/{{ item }}"
-    dest: "{{ user_home }}/{{ item }}"
+  template:
+    src: "{{ playbook_dir }}/../templates/sway/config.j2"
+    dest: "{{ user_home }}/.config/sway/config"
     mode: "0644"
-  loop: "{{ dotfiles_sway }}"
+  tags: [sway, dotfiles]
 
 - name: Deploy fcitx5 config
   copy:
