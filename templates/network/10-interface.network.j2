@@ -11,3 +11,6 @@ IPMasquerade=ipv4
 {% for dns in dns_servers %}
 DNS={{ dns }}
 {% endfor %}
+{% if dns_fallback is defined %}
+FallbackDNS={{ dns_fallback | join(' ') }}
+{% endif %}

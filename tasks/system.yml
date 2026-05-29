@@ -115,25 +115,6 @@
   when: wifi_ssid is defined and wifi_password is defined
   tags: [wifi, system]
 
-# ─── DNS ───
-- name: Ensure resolved config directory exists
-  file:
-    path: /etc/systemd/resolved.conf.d
-    state: directory
-    mode: "0755"
-  tags: [dns, system]
-
-- name: Configure DNS
-  copy:
-    dest: /etc/systemd/resolved.conf.d/dns.conf
-    content: |
-      [Resolve]
-      DNS={{ dns_servers | join(' ') }}
-      FallbackDNS={{ dns_fallback | join(' ') }}
-    mode: "0644"
-  notify: restart systemd-resolved
-  tags: [dns, system]
-
 # ─── 用户 ───
 - name: Add user to extra groups
   user:

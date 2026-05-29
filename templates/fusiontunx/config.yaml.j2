@@ -48,6 +48,7 @@ proxy-groups:
   type: select
   proxies:
   - "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Priority"
+  - "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Auto"
   - Auto
   - "\U0001F1ED\U0001F1F0\u9999\u6e2f HK-Auto"
   - "\U0001F1F9\U0001F1FC\u53f0\u6e7e TW-Auto"
@@ -60,6 +61,14 @@ proxy-groups:
   - "\U0001F1FA\U0001F1F8\u7f8e\u56fd US-Auto"
   - Manual
   - DIRECT
+
+- name: "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Priority"
+  type: fallback
+  proxies:
+  - "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Auto"
+  - Auto
+  url: http://www.gstatic.com/generate_204
+  interval: 300
 
 - name: "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Auto"
   type: url-test
@@ -158,14 +167,6 @@ proxy-groups:
   use:
   - airport
   filter: "(?i)\u7f8e\u56fd|US|united states|los angeles|san jose|ashburn"
-
-- name: "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Priority"
-  type: fallback
-  proxies:
-  - "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Auto"
-  - Auto
-  url: http://www.gstatic.com/generate_204
-  interval: 300
 
 - name: Manual
   type: select
