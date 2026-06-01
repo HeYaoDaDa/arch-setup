@@ -13,6 +13,14 @@
     - /var/log
   tags: [mihomo, proxy]
 
+- name: Symlink yacd to mihomo directory
+  file:
+    src: /usr/share/yacd
+    dest: /etc/mihomo/yacd
+    state: link
+    force: yes
+  tags: [mihomo, proxy]
+
 - name: Deploy mihomo config
   template:
     src: "{{ playbook_dir }}/../templates/mihomo/config.yaml.j2"
