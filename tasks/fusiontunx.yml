@@ -30,11 +30,10 @@
   when: ssh_forward_target is defined and ssh_forward_port is defined
   tags: [fusiontunx, proxy, ssh-forward]
 
-- name: Enable and start SSH forward service
+- name: Enable SSH forward service
   systemd:
     name: ssh-forward
     enabled: yes
-    state: started
     daemon_reload: yes
   when: ssh_forward_target is defined and ssh_forward_port is defined
   tags: [fusiontunx, proxy, ssh-forward]
@@ -47,16 +46,17 @@
   notify: restart fusiontunx
   tags: [fusiontunx, proxy]
 
+# AUR 包不带 service 文件，自行部署
+- name: Deploy FusionTunX systemd service
+  template:
+    src: "{{ playbook_dir }}/../templates/fusiontunx/fusiontunx.service.j2"
+    dest: /etc/systemd/system/fusiontunx.service
+    mode: "0644"
+  tags: [fusiontunx, proxy]
+
 - name: Enable fusiontunx service
   systemd:
     name: fusiontunx
     enabled: yes
-    daemon_reload: yes
-  tags: [fusiontunx, proxy]
-
-- name: Start fusiontunx service
-  systemd:
-    name: fusiontunx
-    state: started
     daemon_reload: yes
   tags: [fusiontunx, proxy]

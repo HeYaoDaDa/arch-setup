@@ -12,6 +12,8 @@ packages_core:
   - git
   - openssh
   - base-devel
+  - go
+  - npm
   - jq
   - curl
   - wget
@@ -31,7 +33,7 @@ services_enabled:
   - systemd-resolved
   - systemd-timesyncd
   - reflector.timer
-  - fusiontunx
+  # fusiontunx 的 enable/start 由 tasks/fusiontunx.yml 统一管理
 
 # 不需要桌面相关的东西
 packages_extra: []
