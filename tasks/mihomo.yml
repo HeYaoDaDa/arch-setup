@@ -1,0 +1,53 @@
+---
+# ─── mihomo + yacd 部署 ───
+# 访问 http://<router-ip>:9090/ui 打开 yacd Web UI
+
+- name: Ensure mihomo directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /etc/mihomo
+    - /etc/mihomo/rules
+    - /var/log
+  tags: [mihomo, proxy]
+
+- name: Deploy mihomo config
+  template:
+    src: "{{ playbook_dir }}/../templates/mihomo/config.yaml.j2"
+    dest: /etc/mihomo/config.yaml
+    mode: "0600"
+  notify: restart mihomo
+  tags: [mihomo, proxy]
+
+- name: Deploy mihomo systemd service
+  template:
+    src: "{{ playbook_dir }}/../templates/mihomo/mihomo.service.j2"
+    dest: /etc/systemd/system/mihomo.service
+    mode: "0644"
+  tags: [mihomo, proxy]
+
+- name: Enable mihomo service
+  systemd:
+    name: mihomo
+    enabled: yes
+    daemon_reload: yes
+  tags: [mihomo, proxy]
+
+# ─── SSH 端口转发 ───
+- name: Deploy SSH forward systemd service
+  template:
+    src: "{{ playbook_dir }}/../templates/ssh-forward.service.j2"
+    dest: /etc/systemd/system/ssh-forward.service
+    mode: "0644"
+  when: ssh_forward_target is defined and ssh_forward_port is defined
+  tags: [mihomo, proxy, ssh-forward]
+
+- name: Enable SSH forward service
+  systemd:
+    name: ssh-forward
+    enabled: yes
+    daemon_reload: yes
+  when: ssh_forward_target is defined and ssh_forward_port is defined
+  tags: [mihomo, proxy, ssh-forward]

@@ -25,12 +25,12 @@
       include_vars:
         file: "../host_vars/{{ inventory_hostname }}/airport_subscription_url.vault.yml"
       when: inventory_hostname in groups['routers'] | default([])
-      tags: [fusiontunx, proxy]
+      tags: [mihomo, proxy]
 
-    - name: Setup FusionTunX proxy
-      import_tasks: ../tasks/fusiontunx.yml
+    - name: Setup mihomo proxy
+      import_tasks: ../tasks/mihomo.yml
       when: inventory_hostname in groups['routers'] | default([])
-      tags: [fusiontunx, proxy]
+      tags: [mihomo, proxy]
 
     - name: Cleanup
       command: pacman -Sc --noconfirm
@@ -62,8 +62,8 @@
         name: systemd-logind
         state: restarted
 
-    - name: restart fusiontunx
+    - name: restart mihomo
       systemd:
-        name: fusiontunx
+        name: mihomo
         state: restarted
         daemon_reload: yes

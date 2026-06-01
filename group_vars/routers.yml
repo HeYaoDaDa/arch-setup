@@ -12,8 +12,6 @@ packages_core:
   - git
   - openssh
   - base-devel
-  - go
-  - npm
   - jq
   - curl
   - wget
@@ -24,7 +22,8 @@ packages_core:
 
 # AUR 包
 packages_aur:
-  - fusiontunx
+  - mihomo-bin
+  - yacd
 
 # 服务（不需要 lxd、桌面相关服务）
 services_enabled:
@@ -33,7 +32,7 @@ services_enabled:
   - systemd-resolved
   - systemd-timesyncd
   - reflector.timer
-  # fusiontunx 的 enable/start 由 tasks/fusiontunx.yml 统一管理
+  # mihomo 的 enable 由 tasks/mihomo.yml 管理
 
 # 不需要桌面相关的东西
 packages_extra: []
