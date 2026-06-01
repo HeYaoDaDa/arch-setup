@@ -1,5 +1,4 @@
 mixed-port: 7893
-tproxy-port: 7894
 allow-lan: true
 bind-address: "*"
 mode: rule
@@ -13,27 +12,40 @@ global-client-fingerprint: chrome
 tcp-concurrent: true
 unified-delay: true
 routing-mark: 256
+
 tun:
-  enable: false
+  enable: true
+  stack: system
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
+
 dns:
   enable: true
   listen: {{ static_ip }}:53
   ipv6: false
-  enhanced-mode: redir-host
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.0/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
   default-nameserver:
     - {{ gateway }}
   nameserver:
-    - {{ gateway }}
-  proxy-server-nameserver:
-    - {{ gateway }}
-  fallback:
-    - {{ gateway }}
     - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fallback:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
   fallback-filter:
     geoip: true
     geoip-code: CN
     geosite:
       - gfw
+
 proxy-providers:
   airport:
     type: http
@@ -43,6 +55,7 @@ proxy-providers:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 300
+
 proxy-groups:
 - name: Proxy
   type: select
