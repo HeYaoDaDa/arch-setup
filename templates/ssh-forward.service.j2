@@ -1,19 +1,42 @@
 [Unit]
-Description=SSH port forward ({{ ssh_forward_port }} -> {{ ssh_forward_target }}:{{ ssh_forward_target_port | default('22') }})
-After=network.target
-Before=sshd.service
+Description=SSH port forward ({{ ssh_forward_port }} -> {{ ssh_forward_target }}:{{ ssh_forward_target_port | default('22') }}) with mihomo tun bypass
+After=network-online.target systemd-networkd.service mihomo.service
+Wants=network-online.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+
+# Wait for nftables and iptables-nft to be ready
+ExecStartPre=/bin/sleep 3
+
+# ─── nftables: DNAT + mark + ct mark ───
 ExecStart=/usr/bin/nft add table ip ssh_forward
 ExecStart=/usr/bin/nft add chain ip ssh_forward prerouting { type nat hook prerouting priority dstnat \; policy accept \; }
-ExecStart=/usr/bin/nft add rule ip ssh_forward prerouting tcp dport {{ ssh_forward_port }} dnat to {{ ssh_forward_target }}:{{ ssh_forward_target_port | default('22') }}
-ExecStart=/usr/bin/nft add chain ip ssh_forward postrouting { type nat hook postrouting priority srcnat \; policy accept \; }
-ExecStart=/usr/bin/nft add rule ip ssh_forward postrouting ip daddr {{ ssh_forward_target }} tcp dport {{ ssh_forward_target_port | default('22') }} snat to {{ static_ip }}
-ExecStart=/usr/bin/nft add chain ip ssh_forward forward { type filter hook forward priority 0 \; policy accept \; }
+ExecStart=/usr/bin/nft add rule ip ssh_forward prerouting ct direction reply meta mark set ct mark
+ExecStart=/usr/bin/nft add rule ip ssh_forward prerouting tcp dport {{ ssh_forward_port }} meta mark set 0x00000001 ct mark set 0x00000001 dnat to {{ ssh_forward_target }}:{{ ssh_forward_target_port | default('22') }}
+ExecStart=/usr/bin/nft add rule ip ssh_forward prerouting ip saddr {{ ssh_forward_target }} tcp sport {{ ssh_forward_target_port | default('22') }} meta mark set 0x00000001
+ExecStart=/usr/bin/nft add chain ip ssh_forward forward { type filter hook forward priority filter \; policy accept \; }
 
-ExecStop=/usr/bin/nft delete table ip ssh_forward
+# ─── ip rule: fwmark 0x1 -> lookup main (bypass mihomo tun routing) ───
+ExecStart=/usr/sbin/ip rule add fwmark 0x1 lookup main priority 8999
+
+# ─── iptables mangle: mark incoming and return traffic ───
+ExecStart=/usr/sbin/iptables -t mangle -A PREROUTING -i {{ network_interface }} -p tcp --dport {{ ssh_forward_port }} -j MARK --set-mark 0x1
+ExecStart=/usr/sbin/iptables -t mangle -A PREROUTING -i {{ network_interface }} -s {{ ssh_forward_target }} -p tcp --sport {{ ssh_forward_target_port | default('22') }} -j MARK --set-mark 0x1
+
+# ─── iptables nat: masquerade for forwarded traffic ───
+ExecStart=/usr/sbin/iptables -t nat -A POSTROUTING -o {{ network_interface }} -d {{ ssh_forward_target }} -p tcp --dport {{ ssh_forward_target_port | default('22') }} -j MASQUERADE
+
+# ─── Fix io.systemd.nat masquerade: exclude marked packets ───
+ExecStart=/usr/bin/nft add rule ip io.systemd.nat postrouting ip saddr @masq_saddr meta mark != 0x00000001 masquerade
+
+# ─── Cleanup ───
+ExecStop=/usr/bin/nft delete table ip ssh_forward 2>/dev/null || true
+ExecStop=/usr/sbin/ip rule del fwmark 0x1 lookup main priority 8999 2>/dev/null || true
+ExecStop=/usr/sbin/iptables -t mangle -D PREROUTING -i {{ network_interface }} -p tcp --dport {{ ssh_forward_port }} -j MARK --set-mark 0x1 2>/dev/null || true
+ExecStop=/usr/sbin/iptables -t mangle -D PREROUTING -i {{ network_interface }} -s {{ ssh_forward_target }} -p tcp --sport {{ ssh_forward_target_port | default('22') }} -j MARK --set-mark 0x1 2>/dev/null || true
+ExecStop=/usr/sbin/iptables -t nat -D POSTROUTING -o {{ network_interface }} -d {{ ssh_forward_target }} -p tcp --dport {{ ssh_forward_target_port | default('22') }} -j MASQUERADE 2>/dev/null || true
 
 [Install]
 WantedBy=multi-user.target
