@@ -64,7 +64,7 @@ proxy-groups:
   - "\U0001F1F8\U0001F1EC\u65b0\u52a0\u5761 SG-Auto"
   - Auto
   - "\U0001F1ED\U0001F1F0\u9999\u6e2f HK-Auto"
-  - "\U0001F1F9\U0001F1FC\u53f0\u6e2e TW-Auto"
+  - "\U0001F1F9\U0001F1FC\u53f0\u6e7e TW-Auto"
   - "\U0001F1F0\U0001F1F7\u97e9\u56fd KR-Auto"
   - "\U0001F1EF\U0001F1F5\u65e5\u672c JP-Auto"
   - "\U0001F1EE\U0001F1F3\u5370\u5ea6 IN-Auto"
@@ -109,14 +109,14 @@ proxy-groups:
   - airport
   filter: "(?i)\u9999\u6e2f|HK|hong kong"
 
-- name: "\U0001F1F9\U0001F1FC\u53f0\u6e2e TW-Auto"
+- name: "\U0001F1F9\U0001F1FC\u53f0\u6e7e TW-Auto"
   type: url-test
   url: http://www.gstatic.com/generate_204
   interval: 300
   tolerance: 50
   use:
   - airport
-  filter: "(?i)\u53f0\u6e2e|TW|taiwan"
+  filter: "(?i)\u53f0\u6e7e|TW|taiwan"
 
 - name: "\U0001F1F0\U0001F1F7\u97e9\u56fd KR-Auto"
   type: url-test
@@ -187,9 +187,6 @@ proxy-groups:
   - airport
 
 rules:
-  - GEOSITE,category-ads-all,REJECT
   - GEOSITE,private,DIRECT
-  - GEOSITE,microsoft,DIRECT
-  - GEOSITE,apple,DIRECT
   - GEOIP,CN,DIRECT
   - MATCH,Proxy
