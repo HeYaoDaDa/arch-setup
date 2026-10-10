@@ -59,6 +59,16 @@
     mode: "0644"
   loop: "{{ dotfiles_fcitx5 }}"
 
+- name: Configure Rime user-data sync dir (WebDAV)
+  lineinfile:
+    path: "{{ user_home }}/.local/share/fcitx5/rime/installation.yaml"
+    regexp: '^sync_dir:'
+    line: "sync_dir: {{ user_home }}/webdav/Rime"
+    create: yes
+    mode: "0600"
+  when: deploy_desktop | default(true)
+  tags: [rime, dotfiles]
+
 - name: Deploy GTK config
   copy:
     src: "{{ playbook_dir }}/../files/dotfiles/.config/gtk-3.0/settings.ini"
