@@ -41,6 +41,15 @@
   when: deploy_desktop | default(true)
   tags: [sway, dotfiles]
 
+- name: Deploy sway helper scripts
+  copy:
+    src: "{{ playbook_dir }}/../files/dotfiles/{{ item }}"
+    dest: "{{ user_home }}/{{ item }}"
+    mode: "0755"
+  loop: "{{ dotfiles_sway }}"
+  when: deploy_desktop | default(true)
+  tags: [sway, dotfiles]
+
 - name: Deploy fcitx5 config
   copy:
     src: "{{ playbook_dir }}/../files/dotfiles/{{ item }}"
@@ -77,7 +86,6 @@
     path: "{{ user_home }}/.config/sway/switch_fcitx_group.sh"
     mode: "0755"
   when: deploy_desktop | default(true)
-  ignore_errors: yes
 
 # ─── SSH 配置（所有机器） ───
 - name: Deploy SSH private key (from vault)
