@@ -1,7 +1,7 @@
 ---
 # ─── 笔记本独有配置 ───
 
-hostname: laptop-arch-p50
+hostname: n140a
 
 # 网络
 network_interface: wlan0
