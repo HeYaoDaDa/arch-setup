@@ -11,10 +11,14 @@ static_ip: 192.168.10.26
 packages_extra:
   - brightnessctl
   - iwd
+  - tlp
+  - thermald
 
 # 笔记本专用服务
 services_extra:
   - iwd
+  - tlp
+  - thermald
 
 # WiFi
 wifi_ssid: FAST_0094

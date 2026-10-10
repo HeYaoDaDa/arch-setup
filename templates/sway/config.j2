@@ -218,5 +218,9 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CU
 exec --no-startup-id fcitx5 -d
 exec --no-startup-id waybar
 exec systemctl --user restart keepassxc.service
+# 空闲 10 分钟熄屏，动一下点亮（不锁屏、不挂起）
+exec --no-startup-id swayidle -w \
+    timeout 600 'swaymsg "output * power off"' \
+    resume 'swaymsg "output * power on"'
 
 include /etc/sway/config.d/*

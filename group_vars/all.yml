@@ -50,6 +50,7 @@ packages_core:
   - slurp
   - wl-clipboard
   - sway
+  - swayidle
   - xorg-xwayland
   - waybar
   - mako
