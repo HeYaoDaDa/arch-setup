@@ -37,6 +37,7 @@ packages_core:
   - nodejs
   - npm
   - python
+  - opencode
   # ── 容器 ──
   - lxd
   # ── 固件 ──
