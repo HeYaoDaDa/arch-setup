@@ -106,6 +106,18 @@
   tags: [network, system]
 
 # ─── WiFi（iwd） ───
+# iwd.service 用 StateDirectory=iwd 让 systemd 在服务启动时才创建 /var/lib/iwd，
+# 在 arch-chroot 中服务未启动，目录不存在，需手动预创建（权限与 systemd 一致）。
+- name: Ensure iwd state directory exists
+  file:
+    path: /var/lib/iwd
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when: wifi_ssid is defined and wifi_password is defined
+  tags: [wifi, system]
+
 - name: Configure iwd WiFi password
   template:
     src: "{{ playbook_dir }}/../templates/iwd/network.psk.j2"
