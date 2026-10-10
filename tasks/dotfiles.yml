@@ -19,6 +19,7 @@
     - .config/keepassxc
     - .config/rclone
     - .config/waybar
+    - .local/share/fcitx5/rime
     - .config/systemd/user
     - .config/systemd/user/default.target.wants
     - .config/systemd/user/graphical-session.target.wants
