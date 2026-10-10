@@ -69,6 +69,17 @@
   when: services_extra | default([]) | length > 0
   tags: [services, system]
 
+# ─── TPM（fTPM 故障机型：屏蔽启动失败的 TPM 单元） ───
+- name: Mask failing TPM units
+  systemd:
+    name: "{{ item }}"
+    masked: yes
+  loop:
+    - systemd-tpm2-setup-early.service
+    - systemd-pcrproduct.service
+    - systemd-pcrlogin@.service
+  tags: [tpm, system]
+
 # ─── 笔记本合盖行为 ───
 - name: Ensure logind override directory exists
   file:

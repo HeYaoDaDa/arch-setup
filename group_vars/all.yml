@@ -43,6 +43,7 @@ packages_core:
   # ── 固件 ──
   - linux-firmware
   - sof-firmware
+  - wireless-regdb
   # ── Wayland 桌面 ──
   - foot
   - fuzzel
