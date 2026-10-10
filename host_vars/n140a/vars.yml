@@ -22,6 +22,8 @@ services_extra:
 
 # WiFi
 wifi_ssid: FAST_0094
+# 无线监管域（让机器按新加坡规则工作）
+wireless_regdom: SG
 
 # 笔记本特有
 lid_close_action: ignore

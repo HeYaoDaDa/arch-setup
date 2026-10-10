@@ -67,6 +67,10 @@
         name: systemd-timesyncd
         state: restarted
 
+    - name: apply wireless regulatory domain
+      command: iw reg set {{ wireless_regdom }}
+      changed_when: false
+
     - name: restart mihomo
       systemd:
         name: mihomo

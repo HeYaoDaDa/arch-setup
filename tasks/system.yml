@@ -173,6 +173,16 @@
   when: wifi_ssid is defined and wifi_password is defined
   tags: [wifi, system]
 
+# ─── 无线监管域 ───
+- name: Set wireless regulatory domain
+  lineinfile:
+    path: /etc/conf.d/wireless-regdom
+    regexp: '^WIRELESS_REGDOM='
+    line: 'WIRELESS_REGDOM="{{ wireless_regdom }}"'
+  when: wireless_regdom is defined
+  notify: apply wireless regulatory domain
+  tags: [wifi, system]
+
 # ─── 用户 ───
 - name: Add user to extra groups
   user:
