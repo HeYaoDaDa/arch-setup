@@ -118,6 +118,25 @@
   when: wifi_ssid is defined and wifi_password is defined
   tags: [wifi, system]
 
+- name: Ensure iwd config directory exists
+  file:
+    path: /etc/iwd
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: wifi_ssid is defined and wifi_password is defined
+  tags: [wifi, system]
+
+- name: Configure iwd main.conf (let systemd-networkd manage IP)
+  template:
+    src: "{{ playbook_dir }}/../templates/iwd/main.conf.j2"
+    dest: /etc/iwd/main.conf
+    mode: "0644"
+  notify: restart iwd
+  when: wifi_ssid is defined and wifi_password is defined
+  tags: [wifi, system]
+
 - name: Configure iwd WiFi password
   template:
     src: "{{ playbook_dir }}/../templates/iwd/network.psk.j2"

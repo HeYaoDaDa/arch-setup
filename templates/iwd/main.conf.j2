@@ -1,0 +1,8 @@
+# /etc/iwd/main.conf - managed by arch-setup
+# WiFi 关联交给 iwd，IP/DNS 统一由 systemd-networkd 管理，
+# 关闭 iwd 内置网络配置以避免出现双 IP / 双默认路由。
+[General]
+EnableNetworkConfiguration=false
+
+[Network]
+NameResolvingService=systemd
