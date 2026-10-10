@@ -105,8 +105,13 @@ services_enabled:
   - systemd-networkd
   - systemd-resolved
   - systemd-timesyncd
-  - lxd
   - reflector.timer
+
+# 需要禁用的服务（不使用 LXD）
+services_disabled:
+  - lxd
+  - lxd.socket
+  - lxcfs
 
 # ─── DNS ───
 dns_servers:

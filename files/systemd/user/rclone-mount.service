@@ -12,7 +12,7 @@ ExecStart=/usr/bin/rclone mount mywebdav: %h/webdav \
     --vfs-cache-max-size 10G \
     --vfs-read-chunk-size 64M \
     --buffer-size 32M
-ExecStop=/usr/bin/fusermount -u %h/webdav
+ExecStop=/usr/bin/fusermount3 -u %h/webdav
 Restart=on-failure
 RestartSec=5
 

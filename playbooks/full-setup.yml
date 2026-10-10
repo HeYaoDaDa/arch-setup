@@ -62,6 +62,11 @@
         name: systemd-logind
         state: restarted
 
+    - name: restart systemd-timesyncd
+      systemd:
+        name: systemd-timesyncd
+        state: restarted
+
     - name: restart mihomo
       systemd:
         name: mihomo

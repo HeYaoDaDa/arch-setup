@@ -34,6 +34,9 @@ services_enabled:
   - reflector.timer
   # mihomo 的 enable 由 tasks/mihomo.yml 管理
 
+# 不需要禁用任何服务
+services_disabled: []
+
 # 不需要桌面环境
 deploy_desktop: false
 

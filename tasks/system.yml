@@ -27,6 +27,22 @@
   changed_when: false
   tags: [timezone, system]
 
+# ─── NTP ───
+- name: Ensure timesyncd drop-in directory exists
+  file:
+    path: /etc/systemd/timesyncd.conf.d
+    state: directory
+    mode: "0755"
+  tags: [time, system]
+
+- name: Configure nearby NTP servers
+  copy:
+    src: "{{ playbook_dir }}/../files/systemd/timesyncd.conf.d/10-ntp.conf"
+    dest: /etc/systemd/timesyncd.conf.d/10-ntp.conf
+    mode: "0644"
+  notify: restart systemd-timesyncd
+  tags: [time, system]
+
 # ─── 语言环境 ───
 - name: Generate locale
   locale_gen:
@@ -67,6 +83,15 @@
     enabled: yes
   loop: "{{ services_extra | default([]) }}"
   when: services_extra | default([]) | length > 0
+  tags: [services, system]
+
+- name: Disable unwanted services
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+  loop: "{{ services_disabled | default([]) }}"
+  when: (services_disabled | default([])) | length > 0
   tags: [services, system]
 
 # ─── TPM（fTPM 故障机型：屏蔽启动失败的 TPM 单元） ───
