@@ -4,7 +4,7 @@ all:
     desktop-arch-i712700:
       # 台式机：i7-12700 + Intel UHD 770 + Arc A380
     n140a:
-      # 笔记本：ThinkPad P50
+      # 笔记本：Lecoo N140A
   children:
     routers:
       hosts:
