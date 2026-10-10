@@ -58,6 +58,16 @@ input "type:keyboard" {
     xkb_numlock enabled
 }
 
+# 触摸板：轻触即点击；三指轻触=中键（tap_button_map lrm），左右键同按也=中键
+input "type:touchpad" {
+    tap enabled
+    tap_button_map lrm
+    middle_emulation enabled
+    natural_scroll disabled
+    scroll_method two_finger
+    dwt enabled
+}
+
 ### Key bindings
 #
 # Basics:
