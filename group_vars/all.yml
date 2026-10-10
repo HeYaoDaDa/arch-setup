@@ -123,6 +123,7 @@ dotfiles_common:
   - .bashrc
   - .bash_profile
   - .gitconfig
+  - .config/waybar/power_menu.xml
 
 dotfiles_sway:
   - .config/sway/switch_fcitx_group.sh

@@ -18,6 +18,7 @@
     - .config/gtk-3.0
     - .config/keepassxc
     - .config/rclone
+    - .config/waybar
     - .config/systemd/user
     - .config/systemd/user/default.target.wants
     - .config/systemd/user/graphical-session.target.wants
