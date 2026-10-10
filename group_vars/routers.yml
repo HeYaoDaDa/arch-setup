@@ -1,7 +1,7 @@
 ---
 # ─── 无头路由器专用配置（覆盖 all.yml 的重型变量） ───
 
-# 用户组（覆盖 all.yml —— 路由器不需要 lxd、video）
+# 用户组（覆盖 all.yml —— 路由器不需要 video）
 user_groups: [wheel]
 
 # 启用的转发和 NAT（仅在路由器上生效）
@@ -25,7 +25,7 @@ packages_aur:
   - mihomo-bin
   - yacd
 
-# 服务（不需要 lxd、桌面相关服务）
+# 服务（不需要桌面相关服务）
 services_enabled:
   - sshd
   - systemd-networkd
@@ -33,9 +33,6 @@ services_enabled:
   - systemd-timesyncd
   - reflector.timer
   # mihomo 的 enable 由 tasks/mihomo.yml 管理
-
-# 不需要禁用任何服务
-services_disabled: []
 
 # 不需要桌面环境
 deploy_desktop: false

@@ -85,15 +85,6 @@
   when: services_extra | default([]) | length > 0
   tags: [services, system]
 
-- name: Disable unwanted services
-  systemd:
-    name: "{{ item }}"
-    enabled: no
-    state: stopped
-  loop: "{{ services_disabled | default([]) }}"
-  when: (services_disabled | default([])) | length > 0
-  tags: [services, system]
-
 # ─── TPM（fTPM 故障机型：屏蔽启动失败的 TPM 单元） ───
 - name: Mask failing TPM units
   systemd:

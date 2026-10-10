@@ -4,7 +4,7 @@
 # ─── 用户 ───
 user_name: wilson
 user_home: /home/wilson
-user_groups: [wheel, lxd, video]
+user_groups: [wheel, video]
 
 # ─── 时区 / 语言 ───
 timezone: Asia/Singapore
@@ -38,8 +38,6 @@ packages_core:
   - npm
   - python
   - opencode
-  # ── 容器 ──
-  - lxd
   # ── 固件 ──
   - linux-firmware
   - sof-firmware
@@ -106,12 +104,6 @@ services_enabled:
   - systemd-resolved
   - systemd-timesyncd
   - reflector.timer
-
-# 需要禁用的服务（不使用 LXD）
-services_disabled:
-  - lxd
-  - lxd.socket
-  - lxcfs
 
 # ─── DNS ───
 dns_servers:
